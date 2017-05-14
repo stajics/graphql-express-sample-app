@@ -1,0 +1,165 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: "1.0"
+  title: Basic Express API
+  description: API
+# during dev, should point to your local machine
+host: "localhost:3000"
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+
+################################################################################
+#                                  Security                                    #
+################################################################################
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "Users login JWT with Bearer prefix. Example: Bearer <JWT>"
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Register new user.
+      operationId: signUp
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User object that needs to be added to the users.
+          required: true
+          schema:
+            $ref: "#/definitions/PostUsersSignUpBody"
+      responses:
+        "201":
+          description: User signed up.
+          schema:
+            $ref: "#/definitions/PostUserSignUpResponse"
+
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Log in.
+      description: "Log in."
+      operationId: login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: User credentials for login.
+          required: true
+          schema:
+            $ref: "#/definitions/PostUsersLoginBody"
+      responses:
+        "201":
+          description: User logged in.
+          schema:
+            $ref: "#/definitions/PostUserLoginResponse"
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+
+definitions:
+  #################################################
+  #models
+  User:
+    type: object
+    required:
+      - _id
+      - email
+      - firstName
+      - lastName
+    properties:
+      _id:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+  #################################################################
+  #params
+  PostUsersSignUpBody:
+    type: object
+    required:
+      - email
+      - firstName
+      - password
+      - lastName
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      password:
+        type: string
+      lastName:
+        type: string
+
+  PostUsersLoginBody:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  ###############################################################
+  #responses
+  PostUserSignUpResponse:
+    type: object
+    required:
+      - token
+      - user
+    properties:
+      token:
+        type: string
+        description: "JWT"
+      user:
+        $ref: "#/definitions/User"
+
+  PostUserLoginResponse:
+    type: object
+    required:
+      - token
+      - user
+    properties:
+      token:
+        type: string
+        description: "JWT"
+      user:
+        $ref: "#/definitions/User"
